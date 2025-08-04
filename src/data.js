@@ -11,6 +11,7 @@ const skills = [
   { name: "Bootstrap" },
   { name: " C/C++" },
   { name: "Android" },
+  { name: "Servicenow" },
   { name: "R" },
   { name: " Asp .NET &Asp .NET(MVC)" },
   { name: "PHP" },
@@ -18,7 +19,7 @@ const skills = [
   { name: "Teamwork" }, 
   { name: "Communication" }, 
   { name: "Quick Learner" }, 
-  { name: "Problem Solving" }, 
+  { name: "Problem Solving" },  
 ];
 
 const education = [
