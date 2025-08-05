@@ -1,42 +1,45 @@
-import { useState } from "react";
-// import { POST } from "../api/contact-form/route";
+import React, { useRef, useState } from "react";
+import emailjs from "@emailjs/browser";
+import { toast } from "react-toastify";
 
 const Contact = () => {
+  const form = useRef();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
 
-  const handleSubmit = async (e) => {
+  const sendEmail = (e) => {
     e.preventDefault();
 
-    try {
-      const res = await fetch("../api/contact-form", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, message }),
-      });
+    const serviceId = import.meta.env.VITE_API_YOUR_SERVICE_ID;
+    const templateId = import.meta.env.VITE_API_YOUR_TEMPLATE_ID;
+    const userId = import.meta.env.VITE_API_YOUR_PUBLIC_KEY;
 
-      if (res.ok) {
-        console.log("Form submitted successfully");
-        // Optional: clear form
+    if (!serviceId || !templateId || !userId) {
+      toast.error("Email service is not configured properly.");
+      return;
+    }
+
+    emailjs.sendForm(serviceId, templateId, form.current, userId).then(
+      () => {
+        toast.success("Message sent successfully!");
         setName("");
         setEmail("");
         setMessage("");
-      } else {
-        console.error("Form submission failed");
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-    }
+      },
+      () => toast.error("Something went wrong, try again!")
+    );
   };
 
   return (
     <form
-      onSubmit={handleSubmit}
+      ref={form}
+      onSubmit={sendEmail}
       className="w-full flex flex-col items-center justify-around gap-2 max-sm:gap-1 px-4 py-4 pb-12 border border-borderColor rounded-xl text-textColor"
     >
       <h1 className="uppercase text-xl font-bold">Contact Me</h1>
-      
+
       <div className="flex flex-col w-full justify-around items-center">
         <div className="flex w-full flex-col text-xl mb-4 gap-2">
           <label htmlFor="name" className="text-[15px]">Name</label>
@@ -45,7 +48,7 @@ const Contact = () => {
             className="rounded-full w-full text-actionColorc bg-primaryColor border border-borderColor text-[15px] max-sm:text-xs px-4 py-1 max-sm:py-2 outline-none"
             type="text"
             id="name"
-            name="name"
+            name="from_name"
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -59,7 +62,7 @@ const Contact = () => {
             className="rounded-full w-full border border-borderColor bg-primaryColor text-[15px] max-sm:text-xs px-4 py-1 max-sm:py-2 outline-none"
             type="email"
             id="email"
-            name="email"
+            name="to_name"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
