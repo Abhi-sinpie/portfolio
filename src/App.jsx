@@ -5,7 +5,7 @@ import Projects from "./components/Projects.jsx";
 import Skills from "./components/Skills.jsx";
 import Contact from "./components/Contact.jsx";
 import Links from "./components/ui/Links.jsx";
-import Technologies from "./components/Technologies.jsx";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   return (
@@ -13,7 +13,6 @@ function App() {
       <div className="w-[50%] max-sm:w-full flex flex-col gap-4 px-2 py-2">
         <Introduction />
         <Links />
-        {/* <Technologies /> */}
       </div>
       <div className="h-screen max-sm:h-auto w-[50%] max-sm:w-full overflow-y-auto flex flex-col items-start justify-start gap-4 py-4 px-4">
         <Educations />
@@ -22,6 +21,7 @@ function App() {
         <Skills />
         <Contact />
       </div>
+      <ToastContainer/>
     </div>
   );
 }

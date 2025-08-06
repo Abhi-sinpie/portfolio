@@ -1,35 +1,39 @@
-import React, { useRef, useState } from "react";
+import { useRef } from "react";
 import emailjs from "@emailjs/browser";
 import { toast } from "react-toastify";
 
 const Contact = () => {
   const form = useRef();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
+  const serviceId = import.meta.env.VITE_API_YOUR_SERVICE_ID;
+  const templateId = import.meta.env.VITE_API_YOUR_TEMPLATE_ID;
+  const publicKey = import.meta.env.VITE_API_YOUR_PUBLIC_KEY;
 
   const sendEmail = (e) => {
     e.preventDefault();
 
-    const serviceId = import.meta.env.VITE_API_YOUR_SERVICE_ID;
-    const templateId = import.meta.env.VITE_API_YOUR_TEMPLATE_ID;
-    const userId = import.meta.env.VITE_API_YOUR_PUBLIC_KEY;
+    const loadingToast = toast.loading("Message sending! Please wait...");
 
-    if (!serviceId || !templateId || !userId) {
-      toast.error("Email service is not configured properly.");
+    if (!serviceId || !templateId || !publicKey) {
+      toast.error("EmailJS configuration missing");
+      toast.dismiss(loadingToast);
       return;
     }
 
-    emailjs.sendForm(serviceId, templateId, form.current, userId).then(
-      () => {
-        toast.success("Message sent successfully!");
-        setName("");
-        setEmail("");
-        setMessage("");
-      },
-      () => toast.error("Something went wrong, try again!")
-    );
+    emailjs
+      .sendForm(serviceId, templateId, form.current, publicKey)
+      .then(
+        () => {
+          toast.success("Email sent successfully");
+          toast.dismiss(loadingToast);
+          form.current.reset();
+        },
+        (error) => {
+          console.error("EmailJS error:", error);
+          toast.error("Error sending email");
+          toast.dismiss(loadingToast);
+        }
+      );
   };
 
   return (
@@ -42,44 +46,44 @@ const Contact = () => {
 
       <div className="flex flex-col w-full justify-around items-center">
         <div className="flex w-full flex-col text-xl mb-4 gap-2">
-          <label htmlFor="name" className="text-[15px]">Name</label>
+          <label htmlFor="name" className="text-[15px]">
+            Name
+          </label>
           <input
             autoComplete="off"
             className="rounded-full w-full text-actionColorc bg-primaryColor border border-borderColor text-[15px] max-sm:text-xs px-4 py-1 max-sm:py-2 outline-none"
             type="text"
             id="name"
-            name="from_name"
+            name="user_name"
             required
-            value={name}
-            onChange={(e) => setName(e.target.value)}
           />
         </div>
 
         <div className="flex w-full flex-col text-xl mb-4 gap-2">
-          <label htmlFor="email" className="text-[15px]">Email</label>
+          <label htmlFor="email" className="text-[15px]">
+            Email
+          </label>
           <input
             autoComplete="off"
             className="rounded-full w-full border border-borderColor bg-primaryColor text-[15px] max-sm:text-xs px-4 py-1 max-sm:py-2 outline-none"
             type="email"
             id="email"
-            name="to_name"
+            name="user_email"
             required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
       </div>
 
       <div className="flex flex-col mb-4 text-xl w-full gap-2">
-        <label htmlFor="message" className="text-[15px]">Message</label>
+        <label htmlFor="message" className="text-[15px]">
+          Message
+        </label>
         <textarea
           className="rounded-xl text-actionColorc bg-primaryColor border border-borderColor outline-none text-[15px] max-sm:text-xs px-2 py-2"
           rows="5"
           name="message"
           id="message"
           required
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
         ></textarea>
       </div>
 
